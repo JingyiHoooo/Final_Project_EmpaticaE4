@@ -267,19 +267,20 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             // The device manager disconnected from a device
         } else if (status == EmpaStatus.DISCONNECTED) {
 
-            updateLabel(deviceNameLabel, "I dont know");
+            updateLabel(deviceNameLabel, "Waiting for connecting new device");
 
             hide();
         }
     }
 
+    // ACC
     @Override
     public void didReceiveAcceleration(int x, int y, int z, double timestamp) {
         updateLabel(accel_xLabel, "" + x);
         updateLabel(accel_yLabel, "" + y);
         updateLabel(accel_zLabel, "" + z);
     }
-
+    // BVP
     @Override
     public void didReceiveBVP(float bvp, double timestamp) {
         updateLabel(bvpLabel, "" + bvp);
@@ -289,17 +290,17 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     public void didReceiveBatteryLevel(float battery, double timestamp) {
         updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
     }
-
+    // EDA
     @Override
     public void didReceiveGSR(float gsr, double timestamp) {
         updateLabel(edaLabel, "" + gsr);
     }
-
+    // IBI
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
     }
-
+    // TEMP
     @Override
     public void didReceiveTemperature(float temp, double timestamp) {
         updateLabel(temperatureLabel, "" + temp);
@@ -314,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             }
         });
     }
-
+    // TAG
     @Override
     public void didReceiveTag(double timestamp) {
 
