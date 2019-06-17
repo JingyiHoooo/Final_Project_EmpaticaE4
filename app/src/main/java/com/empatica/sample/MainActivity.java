@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,6 +33,12 @@ import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+
 
 
 public class MainActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
@@ -187,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     }
 
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -246,6 +252,8 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         didUpdateOnWristStatus(status);
     }
 
+
+    // Control UI accoring to the status to BLE connection
     @Override
     public void didUpdateStatus(EmpaStatus status) {
         // Update the UI
@@ -267,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             // The device manager disconnected from a device
         } else if (status == EmpaStatus.DISCONNECTED) {
 
-            updateLabel(deviceNameLabel, "Waiting for connecting new device");
+            updateLabel(deviceNameLabel, "Waiting for a new device");
 
             hide();
         }
@@ -299,6 +307,18 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
+
+        try{
+            FileOutputStream writer = openFileOutput("IBIData.csv", MODE_APPEND);
+            writer.write(Float.toString(ibi).getBytes());
+            writer.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //save();
+
     }
     // TEMP
     @Override
@@ -355,12 +375,13 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             public void run() {
 
                 dataCnt.setVisibility(View.VISIBLE);
+                // dataCnt IS A LINEAR lAYOUT
             }
         });
     }
 
     void hide() {
-
+    // textView and disconnect button invisible
         runOnUiThread(new Runnable() {
 
             @Override
@@ -370,4 +391,38 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             }
         });
     }
-}
+
+   // private void save() {
+        /*
+        File file = getFileStreamPath("IBIData.csv");
+        if(!file.exists()) {
+            file.createNewFile();
+        }
+
+        try{
+        FileOutputStream writer = openFileOutput("IBIData.csv", MODE_APPEND);
+        writer.write(Float.toString().getBytes());
+        writer.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+        public void writeSDFile(String fileName, String write_str) throws IOException {
+
+            File file = new File(fileName);
+
+            FileOutputStream fos -new FileOutputStream(file);
+            Byte[] bytes = write_str.getBytes();
+
+            fos.write();
+            fos.close();
+        }
+        */
+
+    }
+
