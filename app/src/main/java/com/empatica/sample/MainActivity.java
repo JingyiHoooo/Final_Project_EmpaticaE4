@@ -308,10 +308,17 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     public void didReceiveIBI(float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
 
-        try{
-            FileOutputStream writer = openFileOutput("IBIData.txt", MODE_APPEND);
-            writer.write(Float.toString(ibi).getBytes());
-            writer.close();
+        try {
+            File file = new File("/storage/internal storage/my_app/IBIData.txt");
+            if (!file.exists()) {
+                File dir = new File(file.getParent());
+                dir.mkdirs();
+                file.createNewFile();
+            }
+
+            FileOutputStream outStream = new FileOutputStream(file, true);
+            outStream.write("ibi".getBytes());
+            outStream.close();
         }
         catch (Exception e) {
             e.printStackTrace();
