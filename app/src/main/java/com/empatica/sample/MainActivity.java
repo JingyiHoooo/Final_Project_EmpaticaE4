@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
     private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 1;
 
+    private static final int REQUEST_PERMISSION_ACCESS_STORAGE = 2;
+
+    private static final int REQUEST_PERMISSION = 3;
+
     // TODO insert your API Key here
     private static final String EMPATICA_API_KEY = "53f2dd8a88424021ad82b35c2f6cf3b4";
 
@@ -86,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        if(checkAndRequestPermissions()) {
+            // carry on the normal flow, as the case of  permissions  granted.
+        }
 
         // Initialize vars that reference UI components
         statusLabel = (TextView) findViewById(R.id.status);
@@ -128,9 +135,70 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         initEmpaticaDeviceManager();
     }
 
+    String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                        };
+
+    private boolean checkAndRequestPermissions(){
+        int result;
+        List<String> mPermissionList = new ArrayList<>();
+        for(String p:permissions){
+            result = ContextCompat.checkSelfPermission(this,p);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                mPermissionList.add(p);
+            }
+        }
+        if (!mPermissionList.isEmpty()) {
+            ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[mPermissionList.size()]),REQUEST_PERMISSION );
+            return false;
+        }
+        return true;
+    }
+
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissionsList[], @NonNull int[] grantResults) {
         switch (requestCode) {
+            //STORAGE
+            case REQUEST_PERMISSION:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission was granted, yay!
+                    initEmpaticaDeviceManager();
+                } else {
+                    // Permission denied, boo!
+                    final boolean needRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    new AlertDialog.Builder(this)
+                            .setTitle("Permission required")
+                            .setMessage("Without this permission application cannot be started, allow it in order to start the sppllication.")
+                            .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // try again
+                                    if (needRationale1) {
+                                        // the "never ask again" flash is not set, try again with permission request
+                                        initEmpaticaDeviceManager();
+                                    } else {
+                                        // the "never ask again" flag is set so the permission requests is disabled, try open app settings to enable the permission
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                        intent.setData(uri);
+                                        startActivity(intent);
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Exit application", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // without permission exit is the only way
+                                    finish();
+                                }
+                            })
+                            .show();
+                }
+                break;
+        }
+            /*
+            //LOCATION
             case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -166,8 +234,49 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                             .show();
                 }
                 break;
+
+            //STORAGE
+            case REQUEST_PERMISSION_ACCESS_STORAGE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission was granted, yay!
+                    initEmpaticaDeviceManager();
+                } else {
+                    // Permission denied, boo!
+                    final boolean needRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    new AlertDialog.Builder(this)
+                            .setTitle("Permission required")
+                            .setMessage("Without this permission storage cannot be accessed, allow it in order to access the storage.")
+                            .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // try again
+                                    if (needRationale1) {
+                                        // the "never ask again" flash is not set, try again with permission request
+                                        initEmpaticaDeviceManager();
+                                    } else {
+                                        // the "never ask again" flag is set so the permission requests is disabled, try open app settings to enable the permission
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                        intent.setData(uri);
+                                        startActivity(intent);
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Exit application", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // without permission exit is the only way
+                                    finish();
+                                }
+                            })
+                            .show();
+                }
+                break;
         }
+        */
+
     }
+
+
 
     private void initEmpaticaDeviceManager() {
         // Android 6 (API level 23) now require ACCESS_COARSE_LOCATION permission to use BLE
@@ -405,7 +514,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             String time = format.format(new Date(System.currentTimeMillis()));
             String fileName = "IBIData" + time + ".txt";
             File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa/"+fileName);
-            file.setExecutable(true);
+            //file.setExecutable(true);
             if (!file.exists()) {
                 File dir = new File(file.getParent());
                 dir.mkdirs();
@@ -419,17 +528,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        /*String filename = "IBIData.txt";
-        FileOutputStream outputStream;
-
-        try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write("ibi".getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
 
     }
