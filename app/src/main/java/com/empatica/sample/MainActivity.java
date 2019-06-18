@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Environment;
+
 
 import com.empatica.empalink.ConnectionNotAllowedException;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -38,6 +39,8 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 
@@ -296,11 +299,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(bvpLabel, "" + bvp);
     }
 
-    // Battery
-    @Override
-    public void didReceiveBatteryLevel(float battery, double timestamp) {
-        updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
-    }
+
 
     // EDA
     @Override
@@ -333,7 +332,14 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         });
     }
 
-    // TAG
+    // Battery
+    @Override
+    public void didReceiveBatteryLevel(float battery, double timestamp) {
+        updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
+        System.out.println("String.valueOf(battery * 100)");
+    }
+
+    // Tag
     @Override
     public void didReceiveTag(double timestamp) {
 
@@ -395,9 +401,10 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             if(!directory.exists()){
                 directory.mkdir();
             }
-
-            File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa/IBIData.txt");
-            l
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
+            String time = format.format(new Date(System.currentTimeMillis()));
+            String fileName = "IBIData" + time + ".txt";
+            File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa/"+fileName);
             file.setExecutable(true);
             if (!file.exists()) {
                 File dir = new File(file.getParent());
