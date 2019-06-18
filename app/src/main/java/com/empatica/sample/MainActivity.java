@@ -402,7 +402,8 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             outStream.write("ibi".getBytes());
             outStream.close();
             System.out.println("here");
-        } catch (Exception e) {
+             }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
