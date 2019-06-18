@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     private void initEmpaticaDeviceManager() {
         // Android 6 (API level 23) now require ACCESS_COARSE_LOCATION permission to use BLE
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION }, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
         } else {
 
             if (TextUtils.isEmpty(EMPATICA_API_KEY)) {
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(ibiLabel, "" + ibi);
 
         // save IBI data to the local memory
-        save();
+        save(float ibi);
     }
 
     // TEMP
@@ -332,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             }
         });
     }
+
     // TAG
     @Override
     public void didReceiveTag(double timestamp) {
@@ -355,8 +356,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                 if (status == EmpaSensorStatus.ON_WRIST) {
 
                     ((TextView) findViewById(R.id.wrist_status_label)).setText("ON WRIST");
-                }
-                else {
+                } else {
 
                     ((TextView) findViewById(R.id.wrist_status_label)).setText("NOT ON WRIST");
                 }
@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     }
 
     void hide() {
-    // textView and disconnect button invisible
+        // textView and disconnect button invisible
         runOnUiThread(new Runnable() {
 
             @Override
@@ -390,22 +390,38 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     }
 
     void save() {
-        try {
-            File file = new File("/sdcard/Data/IBIData.txt");
+        try{
+            File directory = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa");
+            if(!directory.exists()){
+                directory.mkdir();
+            }
+
+            File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa/IBIData.txt");
+            file.setExecutable(true);
             if (!file.exists()) {
                 File dir = new File(file.getParent());
-                dir.mkdir();
+                dir.mkdirs();
                 file.createNewFile();
             }
 
             FileOutputStream outStream = new FileOutputStream(file, true);
-            outStream.write("ibi".getBytes());
+            outStream.write(String.valueOf(ibi).getBytes());
             outStream.close();
-            System.out.println("here");
-             }
-        catch (Exception e) {
+            System.out.println("New Data Saved");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        /*String filename = "IBIData.txt";
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write("ibi".getBytes());
+            outputStream.close();
+        } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
 
