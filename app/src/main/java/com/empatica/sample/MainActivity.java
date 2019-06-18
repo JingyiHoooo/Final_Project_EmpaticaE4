@@ -312,9 +312,9 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
-
+        float saveData = ibi;
         // save IBI data to the local memory
-        save(float ibi);
+        save(saveData);
     }
 
     // TEMP
@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         });
     }
 
-    void save() {
+    void save(float saveData) {
         try{
             File directory = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa");
             if(!directory.exists()){
@@ -397,6 +397,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             }
 
             File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa/IBIData.txt");
+            l
             file.setExecutable(true);
             if (!file.exists()) {
                 File dir = new File(file.getParent());
@@ -405,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             }
 
             FileOutputStream outStream = new FileOutputStream(file, true);
-            outStream.write(String.valueOf(ibi).getBytes());
+            outStream.write(String.valueOf(saveData).getBytes());
             outStream.close();
             System.out.println("New Data Saved");
             } catch (Exception e) {
@@ -422,6 +423,8 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         } catch (Exception e) {
             e.printStackTrace();
         }*/
+
+
     }
 }
 
