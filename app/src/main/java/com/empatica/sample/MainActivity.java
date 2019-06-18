@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Environment;
 
 import com.empatica.empalink.ConnectionNotAllowedException;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -37,7 +38,7 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.File;
-import java.io.FileNotFoundException;
+
 
 
 
@@ -288,45 +289,34 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(accel_yLabel, "" + y);
         updateLabel(accel_zLabel, "" + z);
     }
+
     // BVP
     @Override
     public void didReceiveBVP(float bvp, double timestamp) {
         updateLabel(bvpLabel, "" + bvp);
     }
 
+    // Battery
     @Override
     public void didReceiveBatteryLevel(float battery, double timestamp) {
         updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
     }
+
     // EDA
     @Override
     public void didReceiveGSR(float gsr, double timestamp) {
         updateLabel(edaLabel, "" + gsr);
     }
+
     // IBI
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
 
-        try {
-            File file = new File("/storage/internal storage/my_app/IBIData.txt");
-            if (!file.exists()) {
-                File dir = new File(file.getParent());
-                dir.mkdirs();
-                file.createNewFile();
-            }
-
-            FileOutputStream outStream = new FileOutputStream(file, true);
-            outStream.write("ibi".getBytes());
-            outStream.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //save();
-
+        // save IBI data to the local memory
+        save();
     }
+
     // TEMP
     @Override
     public void didReceiveTemperature(float temp, double timestamp) {
@@ -399,37 +389,22 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         });
     }
 
-   // private void save() {
-        /*
-        File file = getFileStreamPath("IBIData.csv");
-        if(!file.exists()) {
-            file.createNewFile();
-        }
+    void save() {
+        try {
+            File file = new File("/sdcard/Data/IBIData.txt");
+            if (!file.exists()) {
+                File dir = new File(file.getParent());
+                dir.mkdir();
+                file.createNewFile();
+            }
 
-        try{
-        FileOutputStream writer = openFileOutput("IBIData.csv", MODE_APPEND);
-        writer.write(Float.toString().getBytes());
-        writer.close();
-        }
-        catch (Exception e) {
+            FileOutputStream outStream = new FileOutputStream(file, true);
+            outStream.write("ibi".getBytes());
+            outStream.close();
+            System.out.println("here");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-
-
-
-        public void writeSDFile(String fileName, String write_str) throws IOException {
-
-            File file = new File(fileName);
-
-            FileOutputStream fos -new FileOutputStream(file);
-            Byte[] bytes = write_str.getBytes();
-
-            fos.write();
-            fos.close();
-        }
-        */
-
-    }
+}
 
