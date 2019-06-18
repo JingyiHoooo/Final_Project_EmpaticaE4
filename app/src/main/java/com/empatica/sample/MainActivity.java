@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(ibiLabel, "" + ibi);
 
         try{
-            FileOutputStream writer = openFileOutput("IBIData.csv", MODE_APPEND);
+            FileOutputStream writer = openFileOutput("IBIData.txt", MODE_APPEND);
             writer.write(Float.toString(ibi).getBytes());
             writer.close();
         }
