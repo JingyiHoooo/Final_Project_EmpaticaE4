@@ -563,6 +563,10 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             outStream.close();
             System.out.println("New Data Saved");
 
+
+            /**
+             * Call Upload()
+             */
             Intent intent = new Intent(MainActivity.this,Upload.class);
             startActivity(intent);
             System.out.println("New File Uploaded");

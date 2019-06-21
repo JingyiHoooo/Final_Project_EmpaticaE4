@@ -46,17 +46,23 @@ public class Upload extends AppCompatActivity {
             result = client.files().listFolderContinue(result.getCursor());
         }
 
-/*
-        // Upload "test.txt" to Dropbox
+        /**
+         * Upload "test.txt" to Dropbox
+         */
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
-        String time = format.format(new Date(System.currentTimeMillis()));
+        String time = format.format(new Date(System.current.TimeMillis()));
         String fileName = "IBIData" + time + ".txt";
         String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
-        try (InputStream in = new FileInputStream(fileName)) {
-            FileMetadata metadata = client.files().uploadBuilder(file_path)
+
+
+        try (InputStream in = new FileInputStream("txt")) {
+            FileMetadata metadata = client.files().uploadBuilder("/txt")
                     .uploadAndFinish(in);
         }
+        catch (DbxException ex) {
+            System.out.println(ex.getMessage());
+        }
 
-*/
     }
 }
