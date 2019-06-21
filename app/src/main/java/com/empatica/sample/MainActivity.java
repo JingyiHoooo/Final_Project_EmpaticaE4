@@ -3,14 +3,12 @@ package com.empatica.sample;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.DropBoxManager;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -19,13 +17,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.empatica.empalink.ConnectionNotAllowedException;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -36,16 +33,22 @@ import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 
+
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.File;
+import java.io.*;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 
 
 
+
 public class MainActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
+
+    //private static final String TAG = "MainActivity";
+    //rivate static final String ACCESS_TOKEN = "lY_d3DAmzgAAAAAAAAAAdn7IAKZUPyYJXhaYmllRlCFZwhYgt_m6fNafXq8DcgWK";
 
     private static final int REQUEST_ENABLE_BT = 1;
 
@@ -57,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
     // TODO insert your API Key here
     private static final String EMPATICA_API_KEY = "53f2dd8a88424021ad82b35c2f6cf3b4";
-
 
     private EmpaDeviceManager deviceManager = null;
 
@@ -84,17 +86,25 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     private LinearLayout dataCnt;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        if(checkAndRequestPermissions()) {
+
+
+        /**
+         * Permissions
+         */
+        if (checkAndRequestPermissions()) {
             // carry on the normal flow, as the case of  permissions  granted.
         }
 
-        // Initialize vars that reference UI components
+
+        /**
+         * Initialize vars that reference UI components E4
+         */
         statusLabel = (TextView) findViewById(R.id.status);
 
         dataCnt = (LinearLayout) findViewById(R.id.dataArea);
@@ -117,9 +127,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
-
         final Button disconnectButton = findViewById(R.id.disconnectButton);
-
         disconnectButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -130,27 +138,32 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                     deviceManager.disconnect();
                 }
             }
+
         });
 
         initEmpaticaDeviceManager();
     }
 
-    String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                        };
+    /**
+     * Permissions Request
+     */
 
-    private boolean checkAndRequestPermissions(){
+    String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    private boolean checkAndRequestPermissions() {
         int result;
         List<String> mPermissionList = new ArrayList<>();
-        for(String p:permissions){
-            result = ContextCompat.checkSelfPermission(this,p);
+        for (String p : permissions) {
+            result = ContextCompat.checkSelfPermission(this, p);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 mPermissionList.add(p);
             }
         }
         if (!mPermissionList.isEmpty()) {
-            ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[mPermissionList.size()]),REQUEST_PERMISSION );
+            ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[mPermissionList.size()]), REQUEST_PERMISSION);
             return false;
         }
         return true;
@@ -277,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     }
 
 
-
     private void initEmpaticaDeviceManager() {
         // Android 6 (API level 23) now require ACCESS_COARSE_LOCATION permission to use BLE
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -305,7 +317,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
         }
     }
-
 
     @Override
     protected void onPause() {
@@ -357,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
@@ -366,7 +378,10 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     }
 
 
-    // Control UI accoring to the status to BLE connection
+    /**
+     * Control UI accoring to the status to BLE connection
+     */
+
     @Override
     public void didUpdateStatus(EmpaStatus status) {
         // Update the UI
@@ -394,7 +409,9 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         }
     }
 
-    // ACC
+    /**
+     * ACC
+     */
     @Override
     public void didReceiveAcceleration(int x, int y, int z, double timestamp) {
         updateLabel(accel_xLabel, "" + x);
@@ -402,21 +419,26 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(accel_zLabel, "" + z);
     }
 
-    // BVP
+    /**
+     * BVP
+     */
     @Override
     public void didReceiveBVP(float bvp, double timestamp) {
         updateLabel(bvpLabel, "" + bvp);
     }
 
+    /**
+     * EDA
+     */
 
-
-    // EDA
     @Override
     public void didReceiveGSR(float gsr, double timestamp) {
         updateLabel(edaLabel, "" + gsr);
     }
 
-    // IBI
+    /**
+     * IBI
+     */
     @Override
     public void didReceiveIBI(float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
@@ -425,13 +447,17 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         save(saveData);
     }
 
-    // TEMP
+    /**
+     * TEMP
+     */
     @Override
     public void didReceiveTemperature(float temp, double timestamp) {
         updateLabel(temperatureLabel, "" + temp);
     }
 
-    // Update a label with some text, making sure this is run in the UI thread
+    /**
+     * Update a label with some text, making sure this is run in the UI thread
+     */
     private void updateLabel(final TextView label, final String text) {
         runOnUiThread(new Runnable() {
             @Override
@@ -441,14 +467,18 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         });
     }
 
-    // Battery
+    /**
+     * Battery
+     */
     @Override
     public void didReceiveBatteryLevel(float battery, double timestamp) {
         updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
         System.out.println("String.valueOf(battery * 100)");
     }
 
-    // Tag
+    /**
+     * Tag
+     */
     @Override
     public void didReceiveTag(double timestamp) {
 
@@ -504,16 +534,23 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         });
     }
 
+    /**
+     * Save file at internal storage -> Empa
+     *
+     * @param saveData
+     */
     void save(float saveData) {
-        try{
-            File directory = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa");
-            if(!directory.exists()){
+        try {
+            File directory = new File(Environment.getExternalStorageDirectory().getPath() + "/Empa");
+            if (!directory.exists()) {
                 directory.mkdir();
             }
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
             String time = format.format(new Date(System.currentTimeMillis()));
             String fileName = "IBIData" + time + ".txt";
-            File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Empa/"+fileName);
+            String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
+
+            File file = new File(file_path);
             //file.setExecutable(true);
             if (!file.exists()) {
                 File dir = new File(file.getParent());
@@ -525,11 +562,184 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             outStream.write(String.valueOf(saveData).getBytes());
             outStream.close();
             System.out.println("New Data Saved");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+            Intent intent = new Intent(MainActivity.this,Upload.class);
+            startActivity(intent);
+            System.out.println("New File Uploaded");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
+/*
+    void uploadFile(String file_path, String fileName) {
+        AndroidAuthSession session;
+
+        initDropBox();
+
+        DropBoxManager.Entry response;
+
+        writeFileContent(file_path);
+        File file = new File(file_path);
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+
+        try {
+            response = mDBApi.putFile("/my_file.txt", inputStream,
+                    file.length(), null, null);
+            Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
+        } catch (DropboxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+
+    }
+
+
+    void initDropBox() {
+
+        // Create Dropbox client
+        DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/Apps/E4 Link").build();
+        DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
+        return client;
+        // Get current account info
+
+        AppKeyPair appKeys = new AppKeyPair(55bv7menhh43eth, uyh8y3vm4yr5uii);
+        session = new AndroidAuthSession(appKeys);
+        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
+        mDBApi.getSession().startOAuth2Authentication(MainActivity.this);
+
+    }
+
+*/
+/*
+    @Override
+    public void createFolder(String parentPath, String newDirName) throws Exception {
+        File body = new File();
+        body.setName(newDirName);
+        body.setMimeType(FOLDER_MIME_TYPE);
+
+        GDrivePath parentGdrivePath = new GDrivePath(parentPath);
+
+        body.setParents(
+                Arrays.asList(new ParentReference().setId(parentGdrivePath.getGDriveId())));
+        try
+        {
+            File file = getDriveService(parentGdrivePath.getAccount()).files().insert(body).execute();
+
+            logDebug("created folder "+newDirName+" in "+parentPath+". id: "+file.getId());
+
+            return new GDrivePath(parentPath, file).getFullPath();
+        }
+        catch (Exception e)
+        {
+            throw convertException(e);
+        }
+
+    }
+    */
+
+
+
+
+
+
+/*
+    void uploadtoDrive(File file, String fileName) {
+
+        File fileMetadata = new File(file);
+        fileMetadata.setName("photo.jpg");
+        java.io.File filePath = new java.io.File("files/photo.jpg");
+        FileContent mediaContent = new FileContent("image/jpeg", filePath);
+        File drivefile = drive.files().create(fileMetadata, mediaContent)
+                .setFields("id")
+                .execute();
+        System.out.println("File ID: " + (drivefile.getId());
+        /**
+         * Method 1
+         */
+        /*
+        Intent inent = new Intent(MainActivity.this,MyDriveUpload.class);
+
+        startActivity(inent);
+        */
+    /**
+     *Method 2
+     */
+            /*
+            try {
+                String folderId = "0BwwA4oUTeiV1TGRPeTVjaWRDY1E";
+                File fileMetadata = new File(file);
+                fileMetadata.setName("photo.jpg");
+                fileMetadata.setParents(Collections.singletonList(folderId));
+                java.io.File filePath = new java.io.File("files/photo.jpg");
+                FileContent mediaContent = new FileContent("txt", filePath);
+                File file = drive.files().create(fileMetadata, mediaContent)
+                        .setFields("id")
+                        .execute();
+                System.out.println("File ID: " + file.getId());
+
+                // File's metadata.
+                InputStream is = new BufferedInputStream(new FileInputStream(file));
+                file.setmimetype(URLConnection.guessContentTypeFromStream(is));
+
+                //TODO: Upload to specific folder!
+                // File's content.
+                final FileContent mediaContent = new FileContent(URLConnection.guessContentTypeFromStream(is), file);
+                new Thread() {
+                    public void run() {
+                        try {
+                            File uploadedFile = DriveFiles.getDriveFileInstance().getDrive_files().insert(body, mediaContent).execute();
+                            closeActionHandlerDialog();
+                            new RefreshAction().updateAction(context);
+                        } catch (Exception ie) {
+                            closeActionHandlerDialog();
+                        }
+                    }
+                }.start();
+            } catch (Exception e) {
+                closeActionHandlerDialog();
+            }
+        }
+        */
+
+
+    /**
+     *  Method 3
+     */
+/*
+        Blob file = new Blob(String.valueOf(saveData),{type: 'text/plain'});
+        var metadata = {
+                'name': fileName, // Filename at Google Drive
+                'mimeType': 'text/plain', // mimeType at Google Drive
+                'parents': ['### folder ID ###'], // Folder ID at Google Drive
+};
+
+        var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
+        var form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+        form.append('file', file);
+
+        XMLHttpRequest xhr = new XMLHttpRequest();
+        xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.responseType = 'json';
+        xhr.onload = () => {
+            console.log(xhr.response.id); // Retrieve uploaded file ID.
+        };
+        xhr.send(form);
+    */
+
+
 }
+
 
