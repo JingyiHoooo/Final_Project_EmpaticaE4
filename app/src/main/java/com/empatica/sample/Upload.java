@@ -11,7 +11,7 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
-
+import com.dropbox.core.v2.files.WriteMode;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -49,15 +49,16 @@ public class Upload extends AppCompatActivity {
         /**
          * Upload "test.txt" to Dropbox
          */
-
+/*
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
         String time = format.format(new Date(System.current.TimeMillis()));
         String fileName = "IBIData" + time + ".txt";
         String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
+*/
 
-
-        try (InputStream in = new FileInputStream("txt")) {
-            FileMetadata metadata = client.files().uploadBuilder("/txt")
+        try (InputStream in = new FileInputStream("test.txt")) {
+            FileMetadata metadata = client.files().uploadBuilder("/test.txt")
+                    .withMode(WriteMode.OVERWRITE)
                     .uploadAndFinish(in);
         }
         catch (DbxException ex) {

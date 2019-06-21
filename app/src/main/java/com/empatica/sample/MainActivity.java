@@ -548,8 +548,8 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
             String time = format.format(new Date(System.currentTimeMillis()));
             String fileName = "IBIData" + time + ".txt";
-            String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
-
+            //String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
+            String file_path =  Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.empatica.sample/" + fileName;
             File file = new File(file_path);
             //file.setExecutable(true);
             if (!file.exists()) {
@@ -566,10 +566,10 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
             /**
              * Call Upload()
-             */
+             *//*
             Intent intent = new Intent(MainActivity.this,Upload.class);
             startActivity(intent);
-            System.out.println("New File Uploaded");
+            System.out.println("New File Uploaded");*/
 
         } catch (Exception e) {
             e.printStackTrace();
