@@ -548,8 +548,8 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
             String time = format.format(new Date(System.currentTimeMillis()));
             String fileName = "IBIData" + time + ".txt";
-            //String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
-            String file_path =  Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.empatica.sample/" + fileName;
+            String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
+            //String file_path =  Environment.getExternalStorageDirectory().getPath()+"IBI" + fileName;
             File file = new File(file_path);
             //file.setExecutable(true);
             if (!file.exists()) {
@@ -566,7 +566,11 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
             /**
              * Call Upload()
-             *//*
+             */
+            Upload.upload(file_path,fileName);
+            System.out.println("New File Uploaded");
+            /*
+
             Intent intent = new Intent(MainActivity.this,Upload.class);
             startActivity(intent);
             System.out.println("New File Uploaded");*/
@@ -577,171 +581,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
 
     }
-/*
-    void uploadFile(String file_path, String fileName) {
-        AndroidAuthSession session;
-
-        initDropBox();
-
-        DropBoxManager.Entry response;
-
-        writeFileContent(file_path);
-        File file = new File(file_path);
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-
-
-        try {
-            response = mDBApi.putFile("/my_file.txt", inputStream,
-                    file.length(), null, null);
-            Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
-        } catch (DropboxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-        }
-
-    }
-
-
-    void initDropBox() {
-
-        // Create Dropbox client
-        DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/Apps/E4 Link").build();
-        DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
-        return client;
-        // Get current account info
-
-        AppKeyPair appKeys = new AppKeyPair(55bv7menhh43eth, uyh8y3vm4yr5uii);
-        session = new AndroidAuthSession(appKeys);
-        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-        mDBApi.getSession().startOAuth2Authentication(MainActivity.this);
-
-    }
-
-*/
-/*
-    @Override
-    public void createFolder(String parentPath, String newDirName) throws Exception {
-        File body = new File();
-        body.setName(newDirName);
-        body.setMimeType(FOLDER_MIME_TYPE);
-
-        GDrivePath parentGdrivePath = new GDrivePath(parentPath);
-
-        body.setParents(
-                Arrays.asList(new ParentReference().setId(parentGdrivePath.getGDriveId())));
-        try
-        {
-            File file = getDriveService(parentGdrivePath.getAccount()).files().insert(body).execute();
-
-            logDebug("created folder "+newDirName+" in "+parentPath+". id: "+file.getId());
-
-            return new GDrivePath(parentPath, file).getFullPath();
-        }
-        catch (Exception e)
-        {
-            throw convertException(e);
-        }
-
-    }
-    */
-
-
-
-
-
-
-/*
-    void uploadtoDrive(File file, String fileName) {
-
-        File fileMetadata = new File(file);
-        fileMetadata.setName("photo.jpg");
-        java.io.File filePath = new java.io.File("files/photo.jpg");
-        FileContent mediaContent = new FileContent("image/jpeg", filePath);
-        File drivefile = drive.files().create(fileMetadata, mediaContent)
-                .setFields("id")
-                .execute();
-        System.out.println("File ID: " + (drivefile.getId());
-        /**
-         * Method 1
-         */
-        /*
-        Intent inent = new Intent(MainActivity.this,MyDriveUpload.class);
-
-        startActivity(inent);
-        */
-    /**
-     *Method 2
-     */
-            /*
-            try {
-                String folderId = "0BwwA4oUTeiV1TGRPeTVjaWRDY1E";
-                File fileMetadata = new File(file);
-                fileMetadata.setName("photo.jpg");
-                fileMetadata.setParents(Collections.singletonList(folderId));
-                java.io.File filePath = new java.io.File("files/photo.jpg");
-                FileContent mediaContent = new FileContent("txt", filePath);
-                File file = drive.files().create(fileMetadata, mediaContent)
-                        .setFields("id")
-                        .execute();
-                System.out.println("File ID: " + file.getId());
-
-                // File's metadata.
-                InputStream is = new BufferedInputStream(new FileInputStream(file));
-                file.setmimetype(URLConnection.guessContentTypeFromStream(is));
-
-                //TODO: Upload to specific folder!
-                // File's content.
-                final FileContent mediaContent = new FileContent(URLConnection.guessContentTypeFromStream(is), file);
-                new Thread() {
-                    public void run() {
-                        try {
-                            File uploadedFile = DriveFiles.getDriveFileInstance().getDrive_files().insert(body, mediaContent).execute();
-                            closeActionHandlerDialog();
-                            new RefreshAction().updateAction(context);
-                        } catch (Exception ie) {
-                            closeActionHandlerDialog();
-                        }
-                    }
-                }.start();
-            } catch (Exception e) {
-                closeActionHandlerDialog();
-            }
-        }
-        */
-
-
-    /**
-     *  Method 3
-     */
-/*
-        Blob file = new Blob(String.valueOf(saveData),{type: 'text/plain'});
-        var metadata = {
-                'name': fileName, // Filename at Google Drive
-                'mimeType': 'text/plain', // mimeType at Google Drive
-                'parents': ['### folder ID ###'], // Folder ID at Google Drive
-};
-
-        var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
-        var form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
-        form.append('file', file);
-
-        XMLHttpRequest xhr = new XMLHttpRequest();
-        xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-        xhr.responseType = 'json';
-        xhr.onload = () => {
-            console.log(xhr.response.id); // Retrieve uploaded file ID.
-        };
-        xhr.send(form);
-    */
 
 
 }

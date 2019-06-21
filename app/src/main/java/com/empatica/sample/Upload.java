@@ -1,9 +1,5 @@
 package com.empatica.sample;
 
-
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
@@ -13,16 +9,15 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 import com.dropbox.core.v2.files.WriteMode;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-public class Upload extends AppCompatActivity {
+public class Upload {
     private static final String ACCESS_TOKEN = "lY_d3DAmzgAAAAAAAAAAdn7IAKZUPyYJXhaYmllRlCFZwhYgt_m6fNafXq8DcgWK";
 
-    public static void main(String args[]) throws DbxException, IOException {
+    public static void upload(String path, String fileName) throws DbxException, IOException {
         // Create Dropbox client
         DbxRequestConfig config = new DbxRequestConfig("dropbox/E4Link");
         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
@@ -31,7 +26,7 @@ public class Upload extends AppCompatActivity {
         FullAccount account = client.users().getCurrentAccount();
         System.out.println(account.getName().getDisplayName());
 
-
+        /*
         // Get files and folder metadata from Dropbox root directory
         ListFolderResult result = client.files().listFolder("");
         while (true) {
@@ -45,19 +40,14 @@ public class Upload extends AppCompatActivity {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-
+        */
         /**
-         * Upload "test.txt" to Dropbox
+         * Upload IBI data file to Dropbox
          */
-/*
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
-        String time = format.format(new Date(System.current.TimeMillis()));
-        String fileName = "IBIData" + time + ".txt";
-        String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
-*/
 
-        try (InputStream in = new FileInputStream("test.txt")) {
-            FileMetadata metadata = client.files().uploadBuilder("/test.txt")
+        File file = new File(path);
+        try (InputStream in = new FileInputStream(file)) {
+            FileMetadata metadata = client.files().uploadBuilder("/IBI/"+fileName)
                     .withMode(WriteMode.OVERWRITE)
                     .uploadAndFinish(in);
         }
