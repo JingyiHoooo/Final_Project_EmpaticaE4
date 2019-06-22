@@ -549,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             String time = format.format(new Date(System.currentTimeMillis()));
             String fileName = "IBIData" + time + ".txt";
             String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
-            //String file_path =  Environment.getExternalStorageDirectory().getPath()+"IBI" + fileName;
+
             File file = new File(file_path);
             //file.setExecutable(true);
             if (!file.exists()) {
@@ -569,11 +569,6 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
              */
             Upload.upload(file_path,fileName);
             System.out.println("New File Uploaded");
-            /*
-
-            Intent intent = new Intent(MainActivity.this,Upload.class);
-            startActivity(intent);
-            System.out.println("New File Uploaded");*/
 
         } catch (Exception e) {
             e.printStackTrace();

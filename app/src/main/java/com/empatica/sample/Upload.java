@@ -18,16 +18,23 @@ public class Upload {
     private static final String ACCESS_TOKEN = "lY_d3DAmzgAAAAAAAAAAdn7IAKZUPyYJXhaYmllRlCFZwhYgt_m6fNafXq8DcgWK";
 
     public static void upload(String path, String fileName) throws DbxException, IOException {
-        // Create Dropbox client
+
+        /**
+         * Create Dropbox client
+         */
         DbxRequestConfig config = new DbxRequestConfig("dropbox/E4Link");
         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
 
-        // Get current account info
+
+        /**
+         * Get current account info
+         */
         FullAccount account = client.users().getCurrentAccount();
         System.out.println(account.getName().getDisplayName());
 
-        /*
-        // Get files and folder metadata from Dropbox root directory
+        /**
+         * Get files and folder metadata from Dropbox root directory
+        */
         ListFolderResult result = client.files().listFolder("");
         while (true) {
             for (Metadata metadata : result.getEntries()) {
@@ -40,7 +47,7 @@ public class Upload {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-        */
+
         /**
          * Upload IBI data file to Dropbox
          */
