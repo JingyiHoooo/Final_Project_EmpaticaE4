@@ -35,6 +35,7 @@ public class Upload {
         /**
          * Get files and folder metadata from Dropbox root directory
         */
+        /*
         ListFolderResult result = client.files().listFolder("");
         while (true) {
             for (Metadata metadata : result.getEntries()) {
@@ -47,6 +48,7 @@ public class Upload {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
+        */
 
         /**
          * Upload IBI data file to Dropbox
