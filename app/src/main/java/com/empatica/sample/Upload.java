@@ -17,7 +17,7 @@ import java.io.IOException;
 public class Upload {
     private static final String ACCESS_TOKEN = "lY_d3DAmzgAAAAAAAAAAdn7IAKZUPyYJXhaYmllRlCFZwhYgt_m6fNafXq8DcgWK";
 
-    public static void upload(String path, String fileName) throws DbxException, IOException {
+    public static void upload(String path, String fileName, String dataLabel) throws DbxException, IOException {
 
         /**
          * Create Dropbox client
@@ -56,7 +56,7 @@ public class Upload {
 
         File file = new File(path);
         try (InputStream in = new FileInputStream(file)) {
-            FileMetadata metadata = client.files().uploadBuilder("/IBI/"+fileName)
+            FileMetadata metadata = client.files().uploadBuilder("/"+dataLabel+"/"+fileName)
                     .withMode(WriteMode.OVERWRITE)
                     .uploadAndFinish(in);
         }
