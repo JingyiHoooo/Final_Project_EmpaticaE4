@@ -2,6 +2,9 @@ package com.empatica.sample;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +16,7 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +27,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.empatica.empalink.ConnectionNotAllowedException;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -319,6 +324,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         }
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -411,12 +417,15 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     }
 
 
-    //List<float> Accs = new ArrayList<>();
-    //List<float> BVPs = new ArrayList<>();
+    //List<Float> AccX = new ArrayList<>();
+    //List<Float> AccY = new ArrayList<>();
+    //List<Float> AccZ = new ArrayList<>();
+
+    //List<Float> BVPs = new ArrayList<>();
     //List<Float> EDAs = new ArrayList<>();
     //List<Float> IBIs = new ArrayList<>();
-    //List<float> TEMPs = new ArrayList<>();
-    //List<float> BATTERYs = new ArrayList<>();
+    //List<Float> TEMPs = new ArrayList<>();
+    //List<Float> BATTERYs = new ArrayList<>();
 
     //int lastSavedMinute = -1;
     //Calendar calendar = Calendar.getInstance();
@@ -429,6 +438,9 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(accel_xLabel, "" + x);
         updateLabel(accel_yLabel, "" + y);
         updateLabel(accel_zLabel, "" + z);
+
+
+        /*
         executorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -447,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                 save(z, "accel_zLabel");
             }
         });
-
+*/
         // save ACC data to the local memory
         //save(x, "accel_xLabel");
         //save(y, "accel_yLabel");
@@ -464,14 +476,24 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
         //save(bvp, "BVP");
         //Log.d("debug", "BVP "+System.currentTimeMillis() + "");
+        Log.d("debug", "BVP ");
+
+/*
         executorService.execute(new Runnable() {
             @Override
             public void run() {
+                try{
+                    Thread.sleep(10);
+
                 save(bvp, "BVP");
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupted (BVP)");
+                }
+
             }
         });
+*/
     }
-
 
     /**
      * IBI
@@ -479,12 +501,22 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     @Override
     public void didReceiveIBI(final float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
+
+        Log.d("debug", "IBI ");
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                save(ibi, "IBI");
+                try{
+                    Thread.sleep(30);
+
+                    save(ibi, "IBI");
+                } catch (InterruptedException e) {
+                    System.out.println("Interrupted (IBI)");
+                }
+
             }
         });
+
     }
 
 
@@ -495,28 +527,52 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         @Override
         public void didReceiveGSR (final float gsr, double timestamp){
             updateLabel(edaLabel, "" + gsr);
+
+            Log.d("debug", "EDA ");
+
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    save(gsr, "EDA");
+                    try{
+                        Thread.sleep(50);
+
+                        save(gsr, "EDA");
+                    } catch (InterruptedException e) {
+                        System.out.println("Interrupted (EDA)");
+                    }
+
                 }
             });
 
+
         }
 
-        /**
+
+
+    /**
          * TEMP
          */
         @Override
         public void didReceiveTemperature (final float temp, double timestamp){
             updateLabel(temperatureLabel, "" + temp);
 
+            Log.d("debug", "TEMP ");
+/*
             executorService.execute(new Runnable() {
+
                 @Override
                 public void run() {
-                    save(temp, "TEMP");
+                    try{
+                        Thread.sleep(70);
+                        save(temp, "TEMP");
+                    } catch (InterruptedException e) {
+                        System.out.println("Interrupted (TEMP)");
+                    }
+
                 }
+
             });
+*/
         }
 
 
@@ -526,15 +582,23 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         @Override
         public void didReceiveBatteryLevel (final float battery, double timestamp){
             updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
-            System.out.println("Battery available");
 
             //Log.d("debug", "Battery "+System.currentTimeMillis() + "");
+
+            Log.d("debug", "BATTERY");
             executorService.execute(new Runnable() {
+
                 @Override
                 public void run() {
-                    save(battery, "BATTERY");
+                    try {
+                        Thread.sleep(40);
+                        save(battery, "BATTERY");
+                    } catch (InterruptedException e) {
+                        System.out.println("Interrupted (BATTERY)");
+                    }
                 }
             });
+
         }
 
         /**
@@ -583,11 +647,14 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             });
         }
 
+        /*
         public void threadPools (Runnable task){
             ExecutorService executorService = Executors.newFixedThreadPool(5);
             executorService.execute(task);
         }
-/*
+        */
+
+        /*
     void dataArrangement(List<Float>EDAs, List<Float>IBIs) {
         long now = System.currentTimeMillis();
         calendar.setTimeInMillis(now);
@@ -635,6 +702,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
          *
          * @param saveData dataLabel
          */
+
 
         void save (float saveData, String dataLabel){
             try {

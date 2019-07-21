@@ -29,8 +29,11 @@ public class Upload {
         /**
          * Get current account info
          */
+
+        /*
         FullAccount account = client.users().getCurrentAccount();
         System.out.println(account.getName().getDisplayName());
+        */
 
         /**
          * Get files and folder metadata from Dropbox root directory
@@ -51,7 +54,7 @@ public class Upload {
         */
 
         /**
-         * Upload IBI data file to Dropbox
+         * Upload data file to Dropbox
          */
 
         File file = new File(path);
