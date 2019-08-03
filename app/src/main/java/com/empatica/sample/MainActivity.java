@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep(40);
+                        Thread.sleep(90);
                         save(battery, "BATTERY");
                     } catch (InterruptedException e) {
                         System.out.println("Interrupted (BATTERY)");
@@ -712,9 +712,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                 }
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
                 String time = format.format(new Date(System.currentTimeMillis()));
-                //String fileName = "IBIData" + time + ".txt";
                 String fileName = dataLabel + "Data" + time + ".txt";
-                //String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + fileName;
                 String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + dataLabel + "/" + fileName;
 
                 File file = new File(file_path);
@@ -726,11 +724,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                 }
 
                 FileOutputStream outStream = new FileOutputStream(file, true);
-
-
-                //for(Float data:saveData){
                 outStream.write((String.valueOf(saveData) + " ").getBytes());
-
                 outStream.close();
                 System.out.println("New " + dataLabel + " Data Saved");
 
