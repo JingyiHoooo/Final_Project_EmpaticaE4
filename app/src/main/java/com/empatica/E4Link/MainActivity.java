@@ -1,22 +1,17 @@
-package com.empatica.sample;
+package com.empatica.E4Link;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.DropBoxManager;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -41,7 +36,6 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 
 import java.io.FileOutputStream;
 import java.io.File;
-import java.io.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -428,7 +422,8 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     //List<Float> BATTERYs = new ArrayList<>();
 
     //int lastSavedMinute = -1;
-    //Calendar calendar = Calendar.getInstance();
+
+    int lastSaveMinAcc = -1;
 
     /**
      * ACC
@@ -440,6 +435,12 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(accel_zLabel, "" + z);
 
 
+        Calendar c =  Calendar.getInstance();
+        int currentMinute = c.get(Calendar.MINUTE);
+        if (currentMinute != lastSaveMinAcc) {
+            // save
+            lastSaveMinAcc = currentMinute;
+        }
         /*
         executorService.execute(new Runnable() {
             @Override
@@ -498,25 +499,41 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     /**
      * IBI
      */
+
+    int lastSaveMinIbi = -1;
+    List<Float> IBIs = new ArrayList<>();
     @Override
     public void didReceiveIBI(final float ibi, double timestamp) {
         updateLabel(ibiLabel, "" + ibi);
 
-        Log.d("debug", "IBI ");
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    Thread.sleep(30);
+        Calendar c =  Calendar.getInstance();
+        int currentMinute = c.get(Calendar.MINUTE);
+        if (lastSaveMinIbi == -1)
+            lastSaveMinIbi = currentMinute;
+        if (currentMinute != lastSaveMinIbi) {
+            save(IBIs, "IBI");
+            IBIs.clear();
+            lastSaveMinIbi = currentMinute;
+        }
 
-                    save(ibi, "IBI");
-                } catch (InterruptedException e) {
-                    System.out.println("Interrupted (IBI)");
-                }
+        IBIs.add(ibi);
 
-            }
-        });
-
+//
+//        Log.d("debug", "IBI ");
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                try{
+//                    Thread.sleep(30);
+//
+//                    save(ibi, "IBI");
+//                } catch (InterruptedException e) {
+//                    System.out.println("Interrupted (IBI)");
+//                }
+//
+//            }
+//        });
+//
     }
 
 
@@ -527,22 +544,22 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         @Override
         public void didReceiveGSR (final float gsr, double timestamp){
             updateLabel(edaLabel, "" + gsr);
-
-            Log.d("debug", "EDA ");
-
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try{
-                        Thread.sleep(50);
-
-                        save(gsr, "EDA");
-                    } catch (InterruptedException e) {
-                        System.out.println("Interrupted (EDA)");
-                    }
-
-                }
-            });
+//
+//            Log.d("debug", "EDA ");
+//
+//            executorService.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try{
+//                        Thread.sleep(50);
+//
+//                        save(gsr, "EDA");
+//                    } catch (InterruptedException e) {
+//                        System.out.println("Interrupted (EDA)");
+//                    }
+//
+//                }
+//            });
 
 
         }
@@ -585,19 +602,19 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
             //Log.d("debug", "Battery "+System.currentTimeMillis() + "");
 
-            Log.d("debug", "BATTERY");
-            executorService.execute(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(90);
-                        save(battery, "BATTERY");
-                    } catch (InterruptedException e) {
-                        System.out.println("Interrupted (BATTERY)");
-                    }
-                }
-            });
+//            Log.d("debug", "BATTERY");
+//            executorService.execute(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    try {
+//                        Thread.sleep(90);
+//                        save(battery, "BATTERY");
+//                    } catch (InterruptedException e) {
+//                        System.out.println("Interrupted (BATTERY)");
+//                    }
+//                }
+//            });
 
         }
 
@@ -704,7 +721,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
          */
 
 
-        void save (float saveData, String dataLabel){
+        void save (List<Float> saveData, String dataLabel){
             try {
                 File directory = new File(Environment.getExternalStorageDirectory().getPath() + "/Empa");
                 if (!directory.exists()) {
@@ -724,7 +741,9 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                 }
 
                 FileOutputStream outStream = new FileOutputStream(file, true);
-                outStream.write((String.valueOf(saveData) + " ").getBytes());
+                String str = String.valueOf(saveData);
+                str = str.substring(str.indexOf('[') + 1, str.lastIndexOf(']') - 1);
+                outStream.write(str.getBytes());
                 outStream.close();
                 System.out.println("New " + dataLabel + " Data Saved");
 

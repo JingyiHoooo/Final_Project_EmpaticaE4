@@ -1,4 +1,4 @@
-package com.empatica.sample;
+package com.empatica.E4Link;
 
 import android.support.annotation.NonNull;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package com.empatica.sample;
+package com.empatica.E4Link;
 
 import android.content.Intent;
 import android.os.Bundle;
