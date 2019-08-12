@@ -45,8 +45,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
-    //private static final String TAG = "MainActivity";
-    //rivate static final String ACCESS_TOKEN = "lY_d3DAmzgAAAAAAAAAAdn7IAKZUPyYJXhaYmllRlCFZwhYgt_m6fNafXq8DcgWK";
+    private static final String TAG = "MainActivity";
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -423,8 +422,11 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
 
     //int lastSavedMinute = -1;
 
-    int lastSaveMinAcc = -1;
 
+    int lastSaveMinAcc = -1;
+    List<Float> AccX = new ArrayList<>();
+    List<Integer> AccY = new ArrayList<>();
+    List<Integer> AccZ = new ArrayList<>();
     /**
      * ACC
      */
@@ -434,32 +436,19 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         updateLabel(accel_yLabel, "" + y);
         updateLabel(accel_zLabel, "" + z);
 
-
-        Calendar c =  Calendar.getInstance();
-        int currentMinute = c.get(Calendar.MINUTE);
+/*
+        Calendar acc =  Calendar.getInstance();
+        int currentMinute = acc.get(Calendar.MINUTE);
+        if (lastSaveMinAcc == -1)
+            lastSaveMinAcc = currentMinute;
         if (currentMinute != lastSaveMinAcc) {
-            // save
+
+            save(AccX, "AccX");
+            AccX.clear();
             lastSaveMinAcc = currentMinute;
         }
-        /*
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                save(x, "accel_xLabel");
-            }
-        });
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                save(y, "accel_yLabel");
-            }
-        });
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                save(z, "accel_zLabel");
-            }
-        });
+
+        AccX.add();
 */
         // save ACC data to the local memory
         //save(x, "accel_xLabel");
@@ -471,29 +460,27 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     /**
      * BVP
      */
+    int lastSaveMinBvp = -1;
+    List<Float> BVPs = new ArrayList<>();
     @Override
     public void didReceiveBVP(final float bvp, double timestamp) {
         updateLabel(bvpLabel, "" + bvp);
 
         //save(bvp, "BVP");
         //Log.d("debug", "BVP "+System.currentTimeMillis() + "");
-        Log.d("debug", "BVP ");
+        //Log.d("debug", "BVP ");
+        Calendar c_bvp =  Calendar.getInstance();
+        int currentMinute = c_bvp.get(Calendar.MINUTE);
+        if (lastSaveMinBvp == -1)
+            lastSaveMinBvp = currentMinute;
+        if (currentMinute != lastSaveMinBvp) {
+            save(BVPs, "BVP");
+            BVPs.clear();
+            lastSaveMinBvp = currentMinute;
+        }
 
-/*
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    Thread.sleep(10);
+        BVPs.add(bvp);
 
-                save(bvp, "BVP");
-                } catch (InterruptedException e) {
-                    System.out.println("Interrupted (BVP)");
-                }
-
-            }
-        });
-*/
     }
 
     /**
@@ -519,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         IBIs.add(ibi);
 
 //
-//        Log.d("debug", "IBI ");
+       Log.d("debug", "IBI ");
 //        executorService.execute(new Runnable() {
 //            @Override
 //            public void run() {
@@ -540,119 +527,112 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
     /**
      * EDA
      */
+    int lastSaveMinGSR = -1;
+    List<Float> GSRs = new ArrayList<>();
+    @Override
+    public void didReceiveGSR (final float gsr, double timestamp){
+        updateLabel(edaLabel, "" + gsr);
 
-        @Override
-        public void didReceiveGSR (final float gsr, double timestamp){
-            updateLabel(edaLabel, "" + gsr);
-//
-//            Log.d("debug", "EDA ");
-//
-//            executorService.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try{
-//                        Thread.sleep(50);
-//
-//                        save(gsr, "EDA");
-//                    } catch (InterruptedException e) {
-//                        System.out.println("Interrupted (EDA)");
-//                    }
-//
-//                }
-//            });
-
-
+        Calendar c_gsr =  Calendar.getInstance();
+        int currentMinute = c_gsr.get(Calendar.MINUTE);
+        if (lastSaveMinGSR == -1)
+            lastSaveMinGSR = currentMinute;
+        if (currentMinute != lastSaveMinGSR) {
+            save(GSRs, "GSR");
+            GSRs.clear();
+            lastSaveMinGSR = currentMinute;
         }
+
+        GSRs.add(gsr);
+    }
 
 
 
     /**
-         * TEMP
-         */
-        @Override
-        public void didReceiveTemperature (final float temp, double timestamp){
-            updateLabel(temperatureLabel, "" + temp);
+     * TEMP
+     */
+    int lastSaveMinTEMP = -1;
+    List<Float> TEMPs = new ArrayList<>();
+    @Override
+    public void didReceiveTemperature (final float temp, double timestamp){
+        updateLabel(temperatureLabel, "" + temp);
 
-            Log.d("debug", "TEMP ");
-/*
-            executorService.execute(new Runnable() {
+        Log.d("debug", "TEMP ");
 
-                @Override
-                public void run() {
-                    try{
-                        Thread.sleep(70);
-                        save(temp, "TEMP");
-                    } catch (InterruptedException e) {
-                        System.out.println("Interrupted (TEMP)");
-                    }
-
-                }
-
-            });
-*/
+        Calendar c_temp =  Calendar.getInstance();
+        int currentMinute = c_temp.get(Calendar.MINUTE);
+        if (lastSaveMinTEMP == -1)
+            lastSaveMinTEMP = currentMinute;
+        if (currentMinute != lastSaveMinTEMP) {
+            save(TEMPs, "TEMP");
+            TEMPs.clear();
+            lastSaveMinTEMP = currentMinute;
         }
 
+        TEMPs.add(temp);
 
-        /**
-         * Battery
-         */
-        @Override
-        public void didReceiveBatteryLevel (final float battery, double timestamp){
-            updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
+    }
+
+    /**
+     * Battery
+     */
+    int lastSaveMinBatt= -1;
+    List<Float> BATTs = new ArrayList<>();
+    @Override
+    public void didReceiveBatteryLevel (final float battery, double timestamp){
+        updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
 
             //Log.d("debug", "Battery "+System.currentTimeMillis() + "");
 
-//            Log.d("debug", "BATTERY");
-//            executorService.execute(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    try {
-//                        Thread.sleep(90);
-//                        save(battery, "BATTERY");
-//                    } catch (InterruptedException e) {
-//                        System.out.println("Interrupted (BATTERY)");
-//                    }
-//                }
-//            });
+        Log.d("debug", "BATTERY");
 
+        Calendar c_temp =  Calendar.getInstance();
+        int currentMinute = c_temp.get(Calendar.MINUTE);
+        if (lastSaveMinBatt == -1)
+            lastSaveMinBatt = currentMinute;
+        if (currentMinute != lastSaveMinBatt) {
+            save(BATTs, "TEMP");
+            BATTs.clear();
+            lastSaveMinBatt = currentMinute;
         }
 
-        /**
-         * Update a label with some text, making sure this is run in the UI thread
-         */
-        private void updateLabel ( final TextView label, final String text){
-            runOnUiThread(new Runnable() {
+        BATTs.add(battery);
+
+
+    }
+
+    /**
+     * Update a label with some text, making sure this is run in the UI thread
+     */
+    private void updateLabel ( final TextView label, final String text){
+        runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     label.setText(text);
                 }
             });
-        }
+    }
 
 
-        /**
-         * Tag
-         */
-        @Override
-        public void didReceiveTag ( double timestamp){
+    /**
+     * Tag
+     */
+    @Override
+    public void didReceiveTag ( double timestamp){
+    }
 
-        }
+    @Override
+    public void didEstablishConnection () {
+        show();
+    }
 
-        @Override
-        public void didEstablishConnection () {
+    @Override
+    public void didUpdateOnWristStatus ( @EmpaSensorStatus final int status){
 
-            show();
-        }
-
-        @Override
-        public void didUpdateOnWristStatus ( @EmpaSensorStatus final int status){
-
-            runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
-
                     if (status == EmpaSensorStatus.ON_WRIST) {
 
                         ((TextView) findViewById(R.id.wrist_status_label)).setText("ON WRIST");
@@ -664,96 +644,70 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             });
         }
 
-        /*
-        public void threadPools (Runnable task){
-            ExecutorService executorService = Executors.newFixedThreadPool(5);
-            executorService.execute(task);
-        }
-        */
+    void show () {
 
-        /*
-    void dataArrangement(List<Float>EDAs, List<Float>IBIs) {
-        long now = System.currentTimeMillis();
-        calendar.setTimeInMillis(now);
-
-        if (calendar.get(Calendar.MINUTE) != lastSavedMinute) {
-
-            // save IBI data to the local memory
-            save(EDAs, "EDA");
-            save(IBIs, "IBI");
-
-            EDAs.clear();
-            IBIs.clear();
-            lastSavedMinute = calendar.get(Calendar.MINUTE);
-        }
-
-    }
-    */
-        void show () {
-
-            runOnUiThread(new Runnable() {
+       runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
 
-                    dataCnt.setVisibility(View.VISIBLE);
-                    // dataCnt IS A LINEAR lAYOUT
-                }
+         dataCnt.setVisibility(View.VISIBLE);
+         // dataCnt IS A LINEAR lAYOUT
+            }
             });
-        }
+    }
 
-        void hide () {
-            // textView and disconnect button invisible
-            runOnUiThread(new Runnable() {
+
+    void hide () {
+        // textView and disconnect button invisible
+        runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
-
                     dataCnt.setVisibility(View.INVISIBLE);
                 }
             });
-        }
+    }
 
-        /**
-         * Save file at internal storage -> Empa
-         *
-         * @param saveData dataLabel
-         */
+    /**
+     * Save file at internal storage -> Empa
+     *
+     * @param saveData dataLabel
+     */
+    void save (List<Float> saveData, String dataLabel){
+        try {
+            File directory = new File(Environment.getExternalStorageDirectory().getPath() + "/Empa");
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+            String time = format.format(new Date(System.currentTimeMillis()-1));
+            String fileName = dataLabel + "Data" + time + ".txt";
+            String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + dataLabel + "/" + fileName;
 
+            File file = new File(file_path);
+            //file.setExecutable(true);
+            if (!file.exists()) {
+                File dir = new File(file.getParent());
+                dir.mkdirs();
+                file.createNewFile();
+            }
+            Log.d("Debug", "Save()" + dataLabel);
+            FileOutputStream outStream = new FileOutputStream(file, true);
+            String str = String.valueOf(saveData);
+            str = str.substring(str.indexOf('[') + 1, str.lastIndexOf(']') - 1);
+            outStream.write(str.getBytes());
+            outStream.close();
 
-        void save (List<Float> saveData, String dataLabel){
-            try {
-                File directory = new File(Environment.getExternalStorageDirectory().getPath() + "/Empa");
-                if (!directory.exists()) {
-                    directory.mkdir();
-                }
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
-                String time = format.format(new Date(System.currentTimeMillis()));
-                String fileName = dataLabel + "Data" + time + ".txt";
-                String file_path = Environment.getExternalStorageDirectory().getPath() + "/Empa/" + dataLabel + "/" + fileName;
+            //System.out.println("New " + dataLabel + " Data Saved");
 
-                File file = new File(file_path);
-                //file.setExecutable(true);
-                if (!file.exists()) {
-                    File dir = new File(file.getParent());
-                    dir.mkdirs();
-                    file.createNewFile();
-                }
+            /**
+             * Call Upload()
+             */
 
-                FileOutputStream outStream = new FileOutputStream(file, true);
-                String str = String.valueOf(saveData);
-                str = str.substring(str.indexOf('[') + 1, str.lastIndexOf(']') - 1);
-                outStream.write(str.getBytes());
-                outStream.close();
-                System.out.println("New " + dataLabel + " Data Saved");
-
-
-                /**
-                 * Call Upload()
-                 */
-
-                Upload.upload(file_path, fileName, dataLabel);
-                System.out.println("New " + dataLabel + " File Uploaded");
+            Upload.upload(file_path, fileName, dataLabel);
+            Log.d("Debug","Upload()" + dataLabel);
+            //System.out.println("New " + dataLabel + " File Uploaded");
 
             } catch (Exception e) {
                 e.printStackTrace();
