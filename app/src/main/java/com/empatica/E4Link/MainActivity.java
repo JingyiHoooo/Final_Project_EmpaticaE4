@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         if (lastSaveMinBatt == -1)
             lastSaveMinBatt = currentMinute;
         if (currentMinute != lastSaveMinBatt) {
-            save(BATTs, "TEMP");
+            save(BATTs, "BATTERY");
             BATTs.clear();
             lastSaveMinBatt = currentMinute;
         }
