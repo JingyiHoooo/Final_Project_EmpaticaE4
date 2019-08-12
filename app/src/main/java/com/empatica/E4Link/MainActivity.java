@@ -695,6 +695,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
             Log.d("Debug", "Save()" + dataLabel);
             FileOutputStream outStream = new FileOutputStream(file, true);
             String str = String.valueOf(saveData);
+            str = str.replaceAll(",","");
             str = str.substring(str.indexOf('[') + 1, str.lastIndexOf(']') - 1);
             outStream.write(str.getBytes());
             outStream.close();
