@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                     final boolean needRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                     new AlertDialog.Builder(this)
                             .setTitle("Permission required")
-                            .setMessage("Without this permission application cannot be started, allow it in order to start the sppllication.")
+                            .setMessage("Without this permission application cannot be started, allow it in order to start the appllication.")
                             .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // try again
@@ -538,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         if (lastSaveMinGSR == -1)
             lastSaveMinGSR = currentMinute;
         if (currentMinute != lastSaveMinGSR) {
-            save(GSRs, "GSR");
+            save(GSRs, "EDA");
             GSRs.clear();
             lastSaveMinGSR = currentMinute;
         }
