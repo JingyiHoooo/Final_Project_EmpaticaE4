@@ -24,7 +24,7 @@ public class Upload {
 
 
         /**
-         * Get current account info
+         * Get current account info to check if the token working
          */
 
         /*
@@ -51,7 +51,7 @@ public class Upload {
         */
 
         /**
-         * Upload data file to Dropbox
+         * Upload file to the applications folder of Dropbox
          */
 
         File file = new File(path);
