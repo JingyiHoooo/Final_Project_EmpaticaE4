@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project gives you the code you need to connect to an Empatica E4 device and start streaming data.
+This project gives you the code you need to connect to an Empatica E4 device and start streaming data, and uploading to the Cloud.
 
 The E4 Link application implemented in the project has very simple functionalities:
 
