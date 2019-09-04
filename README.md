@@ -9,8 +9,8 @@ The E4 Link application implemented in the project has very simple functionaliti
 - It initializes the EmpaLink library with your API key.
 - If the previous step is successful, it starts scanning for Empatica devices, till it finds one that can be used with the API key you inserted in the code.
 - When such a device has been found, the app connects to the devices and streams data.
-- Store the IBI data as txt file per miniute
-- Upload the streamed data to the cloud. (dropbox in this project)
+- Store the IBI, EDA, TEMP, BVP, BATTERY data as txt files per miniute
+- Upload the latest full data files to the cloud. (dropbox in this project)
 - Stop streaming data once the button DISCONNECT has been pressed.
 
 ## Setup
